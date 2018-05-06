@@ -1,0 +1,7 @@
+[frontend]
+listen = 0.0.0.0
+port = 8081
+public_address = 127.0.0.1
+
+[server_agent]
+url = http://127.0.0.1:5000

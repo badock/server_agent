@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block style_css %}
+.game_picture {
+    width: 100%;
+}
+{% endblock %}
+
+{% block banner %}
+<div class="jumbotron">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div><h5>Overview of {{ server_details.server.server_name }}</h5></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-12">
+            <div class="row">
+                <h1>Server information</h1>
+                <table class="table">
+                    <tr>
+                        <td>Server Name</td>
+                        <td>{{ server_details.server.server_name }}</td>
+                    </tr>
+                    <tr>
+                        <td>Address</td>
+                        <td>{{ server_details.server.internet_ip }}</td>
+                    </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td>{{ updated_server_status.status }}</td>
+                    </tr>
+                    <tr>
+                        <td>Password</td>
+                        <td>{{ server_details.server.server_password }}</td>
+                    </tr>
+                    <tr>
+                        <td>RCON password</td>
+                        <td>{{ server_details.server.rcon_password }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

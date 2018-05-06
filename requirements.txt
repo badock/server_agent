@@ -1,0 +1,13 @@
+stripe
+flask
+flask-login
+flask_bcrypt
+flask_openid
+flask_sqlalchemy
+validators
+itsdangerous
+celery
+transitions
+dates
+git+https://github.com/serverstf/python-valve.git
+requests

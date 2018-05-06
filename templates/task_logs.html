@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block style_css %}
+    .game_picture {
+    width: 100%;
+    }
+{% endblock %}
+
+{% block head_tags %}
+    <link rel="stylesheet" href="https://codemirror.net/lib/codemirror.css">
+    <script src="https://codemirror.net/lib/codemirror.js"></script>
+{% endblock %}
+
+{% block banner %}
+    <div class="jumbotron">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div><h5>Track progress of server's tasks</h5></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-12">
+            <a class="btn btn-primary" href="{{ url_for("actions") }}">Back</a>
+            <br/>
+            <br/>
+            <textarea id="code" name="code">
+{% for line in server_task_output.output %}{{ line }}
+{% endfor %}
+</textarea>
+        </div>
+    </div>
+
+    <script>
+      var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        mode: {
+          name: "gfm",
+          tokenTypeOverrides: {
+            emoji: "emoji"
+          }
+        },
+        lineNumbers: true,
+        theme: "default"
+      });
+    </script>
+{% endblock %}

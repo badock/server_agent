@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+
+{% block style_css %}
+    .game_picture {
+    width: 100%;
+    }
+{% endblock %}
+
+{% block banner %}
+    <div class="jumbotron">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div><h5>Manage the server</h5></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-12">
+            <div class="row">
+                <h2>Actions information</h2>
+            </div>
+            <div class="row">
+                <span>
+                    <a href="{{ url_for("actions", action="start") }}"
+                       class="btn btn-primary">Start</a>
+                    <a href="{{ url_for("actions", action="restart") }}"
+                       class="btn btn-warning">Restart</a>
+                    <a href="{{ url_for("actions", action="stop") }}"
+                       class="btn btn-danger">Stop</a>
+                    <a href="{{ url_for("actions", action="update") }}"
+                       class="btn btn-danger">Update</a>
+                </span>
+            </div>
+            <div class="row">
+                <h2>Display message</h2>
+            </div>
+            <div class="row">
+                <span>
+                    <form action="{{ url_for("send_message") }}" method="post">
+                        <input name="msg" type="text" placeholder="Enter your message here">
+                        <input type="submit">
+                    </form>
+                </span>
+            </div>
+            <div class="row">
+                <h2>Send commands</h2>
+            </div>
+            <div class="row">
+                <span>
+                    <form action="{{ url_for("send_command") }}" method="post">
+                        <input name="cmd" type="text" placeholder="Enter your command here">
+                        <input type="submit">
+                    </form>
+                </span>
+            </div>
+            {% if cmd_result is not none %}
+                <div class="row">
+                    {% for line in cmd_result %}
+                        <span>{{ line }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="row">
+                <h2>Task history</h2>
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Task ID</th>
+                        <th scope="col">Kind</th>
+                        <th scope="col">Started at</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for task in server_tasks %}
+                    <tr>
+                        <th scope="row">{{ task }}</th>
+                        <td>{{ server_tasks[task]["action_type"] }}</td>
+                        <td>{{ server_tasks[task]["datetime"] | timesince }}</td>
+                        <td>{{ server_tasks[task]["status"] }}</td>
+                        <td><a class="btn btn-primary" href="{{ url_for('task_logs', task_id=task) }}">View logs</a></td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

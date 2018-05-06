@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block style_css %}
+.game_picture {
+    width: 100%;
+}
+
+.table-log td {
+    padding: 0;
+}
+{% endblock %}
+
+{% block banner %}
+<div class="jumbotron">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div><h5>View logs of the server</h5></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        </div>
+        <div class="col-12">
+            <div class="row">
+                <h1>Logs</h1>
+
+                {% if server_console.content|length == 0 %}
+
+                <table class="table">
+                    <tr>
+                        <td>Empty</td>
+                    </tr>
+                </table>
+                {% else %}
+
+                <table class="table-log">
+                    <thead>
+                        <tr>
+                            <th>Last 100 entries</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for log_msg in server_console.content %}
+                        <tr>
+                            <td><pre class="line-log">{{ log_msg }}</pre></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

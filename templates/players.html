@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+{% block style_css %}
+.game_picture {
+    width: 100%;
+}
+{% endblock %}
+
+{% block banner %}
+<div class="jumbotron">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div><h5>Manage connected players</h5></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-12">
+            <div class="row">
+                <h1>Players</h1>
+
+                {% if server_rcon_details.players.values.players|length == 0 %}
+
+                <table class="table">
+                    <tr>
+                        <td>No player</td>
+                    </tr>
+                </table>
+                {% else %}
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Connected since</th>
+                            <th>Score</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for player in server_rcon_details.players.values.players | sort(attribute='score', reverse=True) %}
+                        <tr>
+                            <td>{{ player.values.name }}</td>
+                            <td>{{ player.values.duration | prettify_duration }}</td>
+                            <td>{{ player.values.score }}</td>
+                            <td>
+                                <a href="{{ url_for("kick_player", player=player.name) }}"><span class="badge badge-warning">Kick</span></a>
+                                <a href="{{ url_for("ban_player", player=player.name) }}"><span class="badge badge-danger">Ban</span></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
