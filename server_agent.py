@@ -292,6 +292,24 @@ def server_update():
     }
 
 
+def server_contextualize(parameters):
+    global SERVER_DETAILS_INFO
+
+    server_config_location = "/home/csgoserver/lgsm/config-lgsm/csgoserver/csgoserver.cfg"
+
+    for (k, v) in parameters.iteritems():
+        cmd = 'sed -i "s/%s=.*//g" %s' % (k, server_config_location)
+        proc = subprocess.Popen(['/bin/bash', '-c', cmd], stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
+        cmd = 'echo -e "\n%s=%s" >> %s' % (k, v, server_config_location)
+        proc = subprocess.Popen(['/bin/bash', '-c', cmd], stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
+        cmd = "grep -v '^ *$' %s > tmp && mv tmp %s" % (server_config_location, server_config_location)
+        proc = subprocess.Popen(['/bin/bash', '-c', cmd], stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
+
+    return {
+        "msg": "OK"
+    }
+
+
 def server_tasks():
     global TASKS
     result = {}
@@ -377,6 +395,13 @@ def web_server_restart():
         "action": "restart",
         "result": result
     })
+
+
+@app.route("/server/contextualize", methods=['POST'])
+def web_server_contextualize():
+    contextualization_data = json.loads(flask.request.data)
+    result = server_contextualize(contextualization_data)
+    return json.dumps(result)
 
 
 @app.route("/server/update")
