@@ -18,7 +18,7 @@ def remove_ansi_char(text):
 DEBUG = True
 
 # Inspired by https://stackoverflow.com/questions/14384739/how-can-i-add-a-background-thread-to-flask
-POOL_TIME = 30 #Seconds
+POOL_TIME = 30
 
 dataLock = threading.Lock()
 # thread handler
@@ -39,7 +39,8 @@ def create_app():
         global SERVER_INFO
         with dataLock:
             # Do your stuff with commonDataStruct Here
-            SERVER_INFO = fetch_server_info
+            print("updating server info")
+            SERVER_INFO = fetch_server_info()
 
         # Set the next thread to happen
         periodic_crawler_thread = threading.Timer(POOL_TIME, update_server_info, ())
