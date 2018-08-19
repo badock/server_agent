@@ -22,46 +22,31 @@ POOL_TIME = 30
 
 dataLock = threading.Lock()
 # thread handler
-periodic_crawler_thread = threading.Thread()
+PERIODIC_CRAWLING_THREAD = threading.Thread()
+PERIODIC_CRAWLING_THREAD_STOP = False
 SERVER_INFO = None
 
 
-def create_app():
-    app = Flask(__name__)
-
-    def interrupt():
-        global periodic_crawler_thread
-        periodic_crawler_thread.cancel()
-
-    def update_server_info():
-        global commonDataStruct
-        global periodic_crawler_thread
-        global SERVER_INFO
+def update_server_info():
+    global SERVER_INFO
+    while not PERIODIC_CRAWLING_THREAD_STOP:
         with dataLock:
             # Do your stuff with commonDataStruct Here
             SERVER_INFO = fetch_server_info()
-
-        # Set the next thread to happen
-        periodic_crawler_thread = threading.Timer(POOL_TIME, update_server_info, ())
-        periodic_crawler_thread.start()
-        periodic_crawler_thread.daemon = True
-
-    def start_crawler():
-        # Do initialisation stuff here
-        global periodic_crawler_thread
-        # Create your thread
-        periodic_crawler_thread = threading.Timer(POOL_TIME, update_server_info, ())
-        periodic_crawler_thread.start()
-        periodic_crawler_thread.daemon = True
-
-    # Initiate
-    start_crawler()
-    # When you kill Flask (SIGTERM), clear the trigger for the next thread
-    atexit.register(interrupt)
-    return app
+        time.sleep(POOL_TIME)
 
 
-app = create_app()
+def interrupt_crawling_thread():
+    global PERIODIC_CRAWLING_THREAD_STOP
+    PERIODIC_CRAWLING_THREAD_STOP = True
+
+
+periodic_crawler_thread = threading.Thread(name='daemon', target=update_server_info)
+periodic_crawler_thread.setDaemon(True)
+
+atexit.register(interrupt_crawling_thread)
+
+app = Flask(__name__)
 
 app.secret_key = "server_agent"
 
