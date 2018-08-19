@@ -6,6 +6,8 @@ import time
 import re
 import os
 import uuid
+import threading
+import atexit
 
 
 def remove_ansi_char(text):
@@ -15,7 +17,49 @@ def remove_ansi_char(text):
 
 DEBUG = True
 
-app = Flask(__name__)
+# Inspired by https://stackoverflow.com/questions/14384739/how-can-i-add-a-background-thread-to-flask
+POOL_TIME = 30 #Seconds
+
+dataLock = threading.Lock()
+# thread handler
+periodic_crawler_thread = threading.Thread()
+SERVER_INFO = {}
+
+
+def create_app():
+    app = Flask(__name__)
+
+    def interrupt():
+        global periodic_crawler_thread
+        periodic_crawler_thread.cancel()
+
+    def doStuff():
+        global commonDataStruct
+        global periodic_crawler_thread
+        global SERVER_INFO
+        with dataLock:
+            # Do your stuff with commonDataStruct Here
+            SERVER_INFO = fetch_server_info
+
+        # Set the next thread to happen
+        periodic_crawler_thread = threading.Timer(POOL_TIME, doStuff, ())
+        periodic_crawler_thread.start()
+
+    def start_crawler():
+        # Do initialisation stuff here
+        global periodic_crawler_thread
+        # Create your thread
+        periodic_crawler_thread = threading.Timer(POOL_TIME, doStuff, ())
+        periodic_crawler_thread.start()
+
+    # Initiate
+        start_crawler()
+    # When you kill Flask (SIGTERM), clear the trigger for the next thread
+    atexit.register(interrupt)
+    return app
+
+app = create_app()
+
 app.secret_key = "server_agent"
 
 SERVER_FOLDER_PATH = "/home/csgoserver"
@@ -110,7 +154,8 @@ def fetch_server_info():
 
 def get_console_log(num_page):
     global SERVER_FOLDER_PATH
-    info = fetch_server_info()
+    global SERVER_INFO
+    info = SERVER_INFO #fetch_server_info()
     service_name = info["script"]["service_name"]
 
     console_log_path = "%s/log/console/%s-console.log" % (SERVER_FOLDER_PATH, service_name)
@@ -146,41 +191,6 @@ def get_task_log(task_id):
         "output": lines
     }
 
-
-# def server_start():
-#     global SERVER_CMD_PATH
-#     global TASKS
-
-#     task_uuid = str(uuid.uuid4())
-#     tmp_log_file = "/tmp/%s.log" % (task_uuid)
-
-#     cmd = '%s start > %s 2>&1' % (SERVER_CMD_PATH, tmp_log_file)
-
-#     # Bug fix: I don't know why, but calling './csgoserver start' via
-#     # without the 'shell=True' option  causes the server to crash when a player
-#     # connects.
-#     # subprocess.Popen('nohup %s start' % SERVER_CMD_PATH, shell=True, close_fds=True)
-#     proc = subprocess.Popen(['/bin/bash', '-c', cmd], shell=True, close_fds=True)
-#     # subprocess.Popen('%s start' % SERVER_CMD_PATH, shell=True, close_fds=True)
-#     # os.spawnl(os.P_NOWAIT, '%s start > /dev/null 2>&1' % SERVER_CMD_PATH)
-#     # os.system('%s start > /dev/null 2>&1' % SERVER_CMD_PATH)
-#     # os.system('%s start  &' % SERVER_CMD_PATH)
-
-
-#     TASKS[task_uuid] = {
-#         "pid": proc.pid,
-#         "proc": proc,
-#         "action_type": "start",
-#         "log_file": tmp_log_file,
-#         "created_at": time.time()
-#     }
-
-#     return {
-#         "started": True,
-#         "task_id": task_uuid,
-#         "action_type": "start",
-#         "log_file": tmp_log_file
-#     }
 
 def server_start():
     global SERVER_CMD_PATH
@@ -336,16 +346,18 @@ def server_tasks():
 
 @app.route("/server/details")
 def web_server_info():
+    global SERVER_INFO
     # global SERVER_DETAILS_INFO
     # if SERVER_DETAILS_INFO is None:
-    server_info = fetch_server_info()
+    server_info = SERVER_INFO  #fetch_server_info()
     SERVER_DETAILS_INFO = server_info
     return json.dumps(SERVER_DETAILS_INFO)
 
 
 @app.route("/server/status")
 def web_server_status():
-    server_info = fetch_server_info()
+    global SERVER_INFO
+    server_info = SERVER_INFO  #fetch_server_info()
     status = server_info["server"]["status"]
     return json.dumps({
         "status": status
