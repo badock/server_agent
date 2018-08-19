@@ -293,7 +293,7 @@ def server_update():
 
 
 def server_contextualize(parameters):
-    global SERVER_DETAILS_INFO
+    # global SERVER_DETAILS_INFO
 
     server_config_location = "/home/csgoserver/lgsm/config-lgsm/csgoserver/csgoserver.cfg"
 
@@ -331,15 +331,15 @@ def server_tasks():
     return result
 
 
-SERVER_DETAILS_INFO = None
+# SERVER_DETAILS_INFO = None
 
 
 @app.route("/server/details")
 def web_server_info():
-    global SERVER_DETAILS_INFO
-    if SERVER_DETAILS_INFO is None:
-        server_info = fetch_server_info()
-        SERVER_DETAILS_INFO = server_info
+    # global SERVER_DETAILS_INFO
+    # if SERVER_DETAILS_INFO is None:
+    server_info = fetch_server_info()
+    SERVER_DETAILS_INFO = server_info
     return json.dumps(SERVER_DETAILS_INFO)
 
 

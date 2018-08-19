@@ -65,7 +65,7 @@ def get_server_console(server_url, num_page):
 def get_server_rcon_details(server_url):
     server_details = get_server_details(server_url)
 
-    server_url = server_details.get("server", {}).get("internet_ip", None)
+    server_url = server_details.get("server", {}).get("server_ip", None)
 
     if server_url is None:
         return {}
@@ -98,8 +98,9 @@ def get_server_rcon_details(server_url):
 
 def send_command(server_url, cmd):
     server_details = get_server_details(server_url)
+    server_status = get_server_status(server_url).get("status")
 
-    server_url = server_details.get("server", {}).get("internet_ip", None)
+    server_url = server_details.get("server", {}).get("server_ip", None)
 
     if server_url is None:
         return {}
@@ -116,7 +117,7 @@ def send_command(server_url, cmd):
         "text": "Failed"
     }
     password = server_details.get("server", {}).get("rcon_password", None)
-    if server_details.get("server", offline_value).get("status", offline_value) == "ONLINE":
+    if server_status == "ONLINE":
         try:
             with valve.rcon.RCON(address, password) as rcon:
                 try:

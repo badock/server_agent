@@ -22,9 +22,9 @@ def config_file_to_dict(config_path):
 
 
 def load_config():
-    global CONFIG_SINGLETON
-    if CONFIG_SINGLETON is not None:
-        return CONFIG_SINGLETON
+    # global CONFIG_SINGLETON
+    # if CONFIG_SINGLETON is not None:
+    #     return CONFIG_SINGLETON
     for config_file_path in CONFIG_FILES_PATH:
         if os.path.exists(config_file_path):
             with open(config_file_path) as config_file:
