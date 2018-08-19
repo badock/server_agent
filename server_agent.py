@@ -23,7 +23,7 @@ POOL_TIME = 30
 dataLock = threading.Lock()
 # thread handler
 periodic_crawler_thread = threading.Thread()
-SERVER_INFO = {}
+SERVER_INFO = None
 
 
 def create_app():
@@ -39,7 +39,6 @@ def create_app():
         global SERVER_INFO
         with dataLock:
             # Do your stuff with commonDataStruct Here
-            print("updating server info")
             SERVER_INFO = fetch_server_info()
 
         # Set the next thread to happen
