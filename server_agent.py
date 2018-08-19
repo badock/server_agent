@@ -16,6 +16,7 @@ def remove_ansi_char(text):
 
 
 DEBUG = True
+SERVER_INFO = None
 
 app = Flask(__name__)
 
@@ -396,8 +397,6 @@ if __name__ == "__main__":
     # thread handler
     PERIODIC_CRAWLING_THREAD = threading.Thread()
     PERIODIC_CRAWLING_THREAD_STOP = False
-    SERVER_INFO = None
-
 
     def update_server_info():
         global SERVER_INFO
