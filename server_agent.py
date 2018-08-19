@@ -17,33 +17,6 @@ def remove_ansi_char(text):
 
 DEBUG = True
 
-# Inspired by https://stackoverflow.com/questions/14384739/how-can-i-add-a-background-thread-to-flask
-POOL_TIME = 30
-
-# thread handler
-PERIODIC_CRAWLING_THREAD = threading.Thread()
-PERIODIC_CRAWLING_THREAD_STOP = False
-SERVER_INFO = None
-
-
-def update_server_info():
-    global SERVER_INFO
-    while not PERIODIC_CRAWLING_THREAD_STOP:
-        SERVER_INFO = fetch_server_info()
-        time.sleep(POOL_TIME)
-
-
-def interrupt_crawling_thread():
-    global PERIODIC_CRAWLING_THREAD_STOP
-    PERIODIC_CRAWLING_THREAD_STOP = True
-
-
-periodic_crawler_thread = threading.Thread(name='daemon', target=update_server_info)
-periodic_crawler_thread.setDaemon(True)
-periodic_crawler_thread.start()
-
-atexit.register(interrupt_crawling_thread)
-
 app = Flask(__name__)
 
 app.secret_key = "server_agent"
@@ -416,6 +389,33 @@ def web_server_tasks():
 
 
 if __name__ == "__main__":
+    # Run the thread in charge of crawling periodically server information
+    # Inspired by https://stackoverflow.com/questions/14384739/how-can-i-add-a-background-thread-to-flask
+    POOL_TIME = 15
+
+    # thread handler
+    PERIODIC_CRAWLING_THREAD = threading.Thread()
+    PERIODIC_CRAWLING_THREAD_STOP = False
+    SERVER_INFO = None
+
+
+    def update_server_info():
+        global SERVER_INFO
+        while not PERIODIC_CRAWLING_THREAD_STOP:
+            SERVER_INFO = fetch_server_info()
+            time.sleep(POOL_TIME)
+
+
+    def interrupt_crawling_thread():
+        global PERIODIC_CRAWLING_THREAD_STOP
+        PERIODIC_CRAWLING_THREAD_STOP = True
+
+
+    periodic_crawler_thread = threading.Thread(name='daemon', target=update_server_info)
+    periodic_crawler_thread.setDaemon(True)
+    periodic_crawler_thread.start()
+
+    atexit.register(interrupt_crawling_thread)
     # Run web application
     print("Creating the 'server_agent' web application")
     app.jinja_env.auto_reload = DEBUG
