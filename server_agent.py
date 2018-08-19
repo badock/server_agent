@@ -20,7 +20,6 @@ DEBUG = True
 # Inspired by https://stackoverflow.com/questions/14384739/how-can-i-add-a-background-thread-to-flask
 POOL_TIME = 30
 
-dataLock = threading.Lock()
 # thread handler
 PERIODIC_CRAWLING_THREAD = threading.Thread()
 PERIODIC_CRAWLING_THREAD_STOP = False
@@ -30,9 +29,7 @@ SERVER_INFO = None
 def update_server_info():
     global SERVER_INFO
     while not PERIODIC_CRAWLING_THREAD_STOP:
-        with dataLock:
-            # Do your stuff with commonDataStruct Here
-            SERVER_INFO = fetch_server_info()
+        SERVER_INFO = fetch_server_info()
         time.sleep(POOL_TIME)
 
 
