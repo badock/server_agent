@@ -44,6 +44,7 @@ def create_app():
         # Set the next thread to happen
         periodic_crawler_thread = threading.Timer(POOL_TIME, update_server_info, ())
         periodic_crawler_thread.start()
+        periodic_crawler_thread.daemon = True
 
     def start_crawler():
         # Do initialisation stuff here
@@ -51,6 +52,7 @@ def create_app():
         # Create your thread
         periodic_crawler_thread = threading.Timer(POOL_TIME, update_server_info, ())
         periodic_crawler_thread.start()
+        periodic_crawler_thread.daemon = True
 
     # Initiate
     start_crawler()
