@@ -33,7 +33,7 @@ def create_app():
         global periodic_crawler_thread
         periodic_crawler_thread.cancel()
 
-    def doStuff():
+    def update_server_info():
         global commonDataStruct
         global periodic_crawler_thread
         global SERVER_INFO
@@ -42,21 +42,22 @@ def create_app():
             SERVER_INFO = fetch_server_info
 
         # Set the next thread to happen
-        periodic_crawler_thread = threading.Timer(POOL_TIME, doStuff, ())
+        periodic_crawler_thread = threading.Timer(POOL_TIME, update_server_info, ())
         periodic_crawler_thread.start()
 
     def start_crawler():
         # Do initialisation stuff here
         global periodic_crawler_thread
         # Create your thread
-        periodic_crawler_thread = threading.Timer(POOL_TIME, doStuff, ())
+        periodic_crawler_thread = threading.Timer(POOL_TIME, update_server_info, ())
         periodic_crawler_thread.start()
 
     # Initiate
-        start_crawler()
+    start_crawler()
     # When you kill Flask (SIGTERM), clear the trigger for the next thread
     atexit.register(interrupt)
     return app
+
 
 app = create_app()
 
@@ -152,10 +153,16 @@ def fetch_server_info():
     return result
 
 
+def get_server_info():
+    global SERVER_INFO
+    if SERVER_INFO is None:
+        SERVER_INFO = fetch_server_info()
+    return SERVER_INFO
+
+
 def get_console_log(num_page):
     global SERVER_FOLDER_PATH
-    global SERVER_INFO
-    info = SERVER_INFO #fetch_server_info()
+    info = get_server_info()
     service_name = info["script"]["service_name"]
 
     console_log_path = "%s/log/console/%s-console.log" % (SERVER_FOLDER_PATH, service_name)
@@ -346,18 +353,13 @@ def server_tasks():
 
 @app.route("/server/details")
 def web_server_info():
-    global SERVER_INFO
-    # global SERVER_DETAILS_INFO
-    # if SERVER_DETAILS_INFO is None:
-    server_info = SERVER_INFO  #fetch_server_info()
-    SERVER_DETAILS_INFO = server_info
-    return json.dumps(SERVER_DETAILS_INFO)
+    server_info = get_server_info()
+    return json.dumps(server_info)
 
 
 @app.route("/server/status")
 def web_server_status():
-    global SERVER_INFO
-    server_info = SERVER_INFO  #fetch_server_info()
+    server_info = get_server_info()
     status = server_info["server"]["status"]
     return json.dumps({
         "status": status
