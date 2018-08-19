@@ -40,6 +40,7 @@ def interrupt_crawling_thread():
 
 periodic_crawler_thread = threading.Thread(name='daemon', target=update_server_info)
 periodic_crawler_thread.setDaemon(True)
+periodic_crawler_thread.start()
 
 atexit.register(interrupt_crawling_thread)
 
