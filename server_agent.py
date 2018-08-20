@@ -1,4 +1,6 @@
 from flask import Flask
+from flask_apscheduler import APScheduler
+import logging
 import flask
 import subprocess
 import json
@@ -9,6 +11,8 @@ import uuid
 import threading
 import atexit
 
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
+logger = logging.getLogger(__name__)
 
 def remove_ansi_char(text):
     ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
@@ -17,10 +21,47 @@ def remove_ansi_char(text):
 
 DEBUG = True
 SERVER_INFO = None
+STATUS_TARGET = None
+
+class Config(object):
+    JOBS = [
+        {
+            'id': 'job1',
+            'func': 'server_agent:update_server_info',
+            'args': (),
+            'trigger': 'interval',
+            'seconds': 300
+        }
+    ]
+
+    SCHEDULER_API_ENABLED = True
+
+
+def update_server_info():
+    global SERVER_INFO
+    logger.info("updating server info")
+    SERVER_INFO = fetch_server_info()
+
+def update_server_info_until_status_changed():
+    global STATUS_TARGET
+    server_info = get_server_info()
+    while server_info.get("network", {}).get("status", "UNKNOWN") != STATUS_TARGET:
+        logger.info("Status is not yet set to '%s': current status is '%s'" % (STATUS_TARGET, server_info.get("network", {}).get("status", "UNKNOWN")))
+        update_server_info()
+        time.sleep(5)
+        server_info = get_server_info()
+    logger.info("done 'update_server_info_until_status_changed'")
+
 
 app = Flask(__name__)
+app.config.from_object(Config())
 
 app.secret_key = "server_agent"
+
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
+
 
 SERVER_FOLDER_PATH = "/home/csgoserver"
 SERVER_CMD_PATH = "%s/csgoserver" % SERVER_FOLDER_PATH
@@ -125,8 +166,10 @@ def get_console_log(num_page):
     service_name = info["script"]["service_name"]
 
     console_log_path = "%s/log/console/%s-console.log" % (SERVER_FOLDER_PATH, service_name)
+    logger.info("console_log_path: %s" % console_log_path)
 
-    cmd = """nline=$(cat log/console/csgoserver-console.log | wc -l); sed -n $(($nline-100)),${nline}p log/console/csgoserver-console.log | tac"""
+    #cmd = """nline=$(cat %s | wc -l); sed -n $(($nline-100)),${nline}p %s | tac""" % (console_log_path, console_log_path)
+    cmd = """cat %s """ % (console_log_path)
 
     proc = subprocess.Popen(['/bin/bash'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
     stdout = proc.communicate(cmd)
@@ -345,6 +388,13 @@ def web_server_task_log(task_id):
 
 @app.route("/server/start")
 def web_server_start():
+    @flask.after_this_request
+    def after_request(response):
+        global STATUS_TARGET
+        STATUS_TARGET = "ONLINE"
+        threading.Thread(target=update_server_info_until_status_changed).start()
+        #update_server_info()
+        return response
     result = server_start()
     return json.dumps({
         "action": "start",
@@ -354,6 +404,13 @@ def web_server_start():
 
 @app.route("/server/stop")
 def web_server_stop():
+    @flask.after_this_request
+    def after_request(response):
+        global STATUS_TARGET
+        STATUS_TARGET = "OFFLINE"
+        threading.Thread(target=update_server_info_until_status_changed).start()
+        #update_server_info()
+        return response
     result = server_stop()
     return json.dumps({
         "action": "stop",
@@ -363,6 +420,13 @@ def web_server_stop():
 
 @app.route("/server/restart")
 def web_server_restart():
+    @flask.after_this_request
+    def after_request(response):
+        global STATUS_TARGET
+        STATUS_TARGET = "ONLINE"
+        threading.Thread(target=update_server_info_until_status_changed).start()
+        #update_server_info()
+        return response
     result = server_restart()
     return json.dumps({
         "action": "restart",
@@ -388,34 +452,11 @@ def web_server_tasks():
     result = server_tasks()
     return json.dumps(result)
 
+threading.Thread(target=update_server_info).start()
 
 if __name__ == "__main__":
-    # Run the thread in charge of crawling periodically server information
-    # Inspired by https://stackoverflow.com/questions/14384739/how-can-i-add-a-background-thread-to-flask
-    POOL_TIME = 15
-
-    # thread handler
-    PERIODIC_CRAWLING_THREAD = threading.Thread()
-    PERIODIC_CRAWLING_THREAD_STOP = False
-
-    def update_server_info():
-        global SERVER_INFO
-        while not PERIODIC_CRAWLING_THREAD_STOP:
-            SERVER_INFO = fetch_server_info()
-            time.sleep(POOL_TIME)
-
-
-    def interrupt_crawling_thread():
-        global PERIODIC_CRAWLING_THREAD_STOP
-        PERIODIC_CRAWLING_THREAD_STOP = True
-
-
-    periodic_crawler_thread = threading.Thread(name='daemon', target=update_server_info)
-    periodic_crawler_thread.setDaemon(True)
-    periodic_crawler_thread.start()
-
-    atexit.register(interrupt_crawling_thread)
     # Run web application
-    print("Creating the 'server_agent' web application")
+    logger.info("Creating the 'server_agent' web application")
     app.jinja_env.auto_reload = DEBUG
+
     app.run(host="0.0.0.0", port=5000, debug=DEBUG, threaded=True)
