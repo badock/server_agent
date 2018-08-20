@@ -11,3 +11,4 @@ transitions
 dates
 git+https://github.com/serverstf/python-valve.git
 requests
+flask_apscheduler
