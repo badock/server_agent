@@ -331,12 +331,20 @@ def server_contextualize(parameters):
     config_file_path = find_config()
     if config_file_path is not None:
         public_url = parameters.get("public_url")
+	logger.info("writing public url '%s' in config file" % public_url)
 
-        config = ConfigParser.ConfigParser()
-        config = config.read(config_file_path)
+        config = ConfigParser.SafeConfigParser()
+        config.read(config_file_path)
         config.add_section('server')
         config.set('server', 'public_url', "%s" % public_url)
-        with open('config_file_path', 'wb') as configfile:
+
+	for section in config.sections():
+	    logger.info(section)
+	    for name, value in config.items(section):
+	        logger.info('  %s = %r' % (name, value))
+
+        with open(config_file_path, 'w') as configfile:
+            logger.warning("Writing config file %s" % config_file_path)
             config.write(configfile)
     else:
         logger.warn("WARNING: I could not find any config file during contextualization")
