@@ -1,5 +1,4 @@
 import flask_login
-from GamingFog import login_manager
 
 # Our mock database.
 users = {"foo@bar.tld": {"password": "secret", "email": "foo@bar.tld"}}
