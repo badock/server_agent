@@ -9,10 +9,12 @@ import re
 import os
 import uuid
 import threading
-import atexit
+from core.config.config_loader import find_config
+import ConfigParser
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
 logger = logging.getLogger(__name__)
+
 
 def remove_ansi_char(text):
     ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
@@ -22,6 +24,7 @@ def remove_ansi_char(text):
 DEBUG = True
 SERVER_INFO = None
 STATUS_TARGET = None
+
 
 class Config(object):
     JOBS = [
@@ -324,6 +327,20 @@ def server_contextualize(parameters):
         cmd = "grep -v '^ *$' %s > tmp && mv tmp %s" % (server_config_location, server_config_location)
         proc = subprocess.Popen(['/bin/bash', '-c', cmd], stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
 
+    # Contextualize config file with public address
+    config_file_path = find_config()
+    if config_file_path is not None:
+        public_url = parameters.get("public_url")
+
+        config = ConfigParser.ConfigParser()
+        config = config.read(config_file_path)
+        config.add_section('server')
+        config.set('server', 'public_url', "%s" % public_url)
+        with open('config_file_path', 'wb') as configfile:
+            config.write(configfile)
+    else:
+        logger.warn("WARNING: I could not find any config file during contextualization")
+
     return {
         "msg": "OK"
     }
@@ -451,6 +468,7 @@ def web_server_update():
 def web_server_tasks():
     result = server_tasks()
     return json.dumps(result)
+
 
 threading.Thread(target=update_server_info).start()
 

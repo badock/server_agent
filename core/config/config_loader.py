@@ -21,6 +21,14 @@ def config_file_to_dict(config_path):
     return None
 
 
+def find_config():
+    for config_file_path in CONFIG_FILES_PATH:
+        if os.path.exists(config_file_path):
+            with open(config_file_path) as config_file:
+                return config_file_path
+    return None
+
+
 def load_config():
     # global CONFIG_SINGLETON
     # if CONFIG_SINGLETON is not None:
