@@ -316,18 +316,13 @@ def server_update():
 
 
 def server_contextualize(parameters):
-    # global SERVER_DETAILS_INFO
-
     server_config_location = "/home/csgoserver/lgsm/config-lgsm/csgoserver/csgoserver.cfg"
-
+    cmd = ""
     for (k, v) in parameters.iteritems():
-        cmd = 'sed -i "s/%s=.*//g" %s' % (k, server_config_location)
-        proc = subprocess.Popen(['/bin/bash', '-c', cmd], stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
-        cmd = 'echo -e "\n%s=%s" >> %s' % (k, v, server_config_location)
-        proc = subprocess.Popen(['/bin/bash', '-c', cmd], stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
-        cmd = "grep -v '^ *$' %s > tmp && mv tmp %s" % (server_config_location, server_config_location)
-        proc = subprocess.Popen(['/bin/bash', '-c', cmd], stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
-
+        cmd += 'sed -i "s/%s=.*//g" %s;' % (k, server_config_location)
+        cmd += 'echo -e "\n%s=%s" >> %s;' % (k, v, server_config_location)
+        cmd += "grep -v '^ *$' %s > tmp && mv tmp %s;" % (server_config_location, server_config_location)
+    proc = subprocess.Popen(['/bin/bash', '-c', cmd], stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
     # Contextualize config file with public address
     config_file_path = find_config()
     if config_file_path is not None:
@@ -336,7 +331,8 @@ def server_contextualize(parameters):
 
         config = ConfigParser.SafeConfigParser()
         config.read(config_file_path)
-        config.add_section('server')
+        if "server" not in config.sections():
+            config.add_section('server')
         config.set('server', 'public_url', "%s" % public_url)
 
         for section in config.sections():
@@ -349,7 +345,6 @@ def server_contextualize(parameters):
             config.write(configfile)
     else:
         logger.warn("WARNING: I could not find any config file during contextualization")
-
     return {
         "msg": "OK"
     }
