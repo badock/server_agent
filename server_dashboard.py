@@ -132,15 +132,17 @@ def logout():
 @app.route("/overview")
 def overview():
     from core.data.server_agent import SERVER_AGENT_URL
-    from core.rcon.rcon_api import get_server_details, get_server_rcon_details, get_server_status
+    from core.rcon.rcon_api import get_server_details, get_server_rcon_details, get_server_status, get_server_public_url
     server_details = get_server_details(SERVER_AGENT_URL)
     server_rcon_details = get_server_rcon_details(SERVER_AGENT_URL)
     updated_server_status = get_server_status(SERVER_AGENT_URL)
+    public_url = get_server_public_url()
 
     return render_template("overview.html",
                            server_details=server_details,
                            server_rcon_details=server_rcon_details,
-                           updated_server_status=updated_server_status)
+                           updated_server_status=updated_server_status,
+                           public_url=public_url)
 
 
 @app.route("/actions?action=<action>")

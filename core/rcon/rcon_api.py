@@ -1,3 +1,4 @@
+from core.config.config_loader import load_config
 import valve.source
 import valve.source.a2s
 import valve.source.master_server
@@ -54,6 +55,11 @@ def get_server_status(server_url):
     server_status_json_str = requests.get("%s/server/status" % (server_url))
     result = server_status_json_str.json()
     return result
+
+
+def get_server_public_url():
+    public_url = load_config().get("server", {}).get("public_url", "")
+    return public_url
 
 
 def get_server_console(server_url, num_page):

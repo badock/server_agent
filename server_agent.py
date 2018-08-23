@@ -45,11 +45,13 @@ def update_server_info():
     logger.info("updating server info")
     SERVER_INFO = fetch_server_info()
 
+
 def update_server_info_until_status_changed():
     global STATUS_TARGET
     server_info = get_server_info()
     while server_info.get("network", {}).get("status", "UNKNOWN") != STATUS_TARGET:
-        logger.info("Status is not yet set to '%s': current status is '%s'" % (STATUS_TARGET, server_info.get("network", {}).get("status", "UNKNOWN")))
+        logger.info("Status is not yet set to '%s': current status is '%s'" % (
+        STATUS_TARGET, server_info.get("network", {}).get("status", "UNKNOWN")))
         update_server_info()
         time.sleep(5)
         server_info = get_server_info()
@@ -64,7 +66,6 @@ app.secret_key = "server_agent"
 scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
-
 
 SERVER_FOLDER_PATH = "/home/csgoserver"
 SERVER_CMD_PATH = "%s/csgoserver" % SERVER_FOLDER_PATH
@@ -171,7 +172,7 @@ def get_console_log(num_page):
     console_log_path = "%s/log/console/%s-console.log" % (SERVER_FOLDER_PATH, service_name)
     logger.info("console_log_path: %s" % console_log_path)
 
-    #cmd = """nline=$(cat %s | wc -l); sed -n $(($nline-100)),${nline}p %s | tac""" % (console_log_path, console_log_path)
+    # cmd = """nline=$(cat %s | wc -l); sed -n $(($nline-100)),${nline}p %s | tac""" % (console_log_path, console_log_path)
     cmd = """cat %s """ % (console_log_path)
 
     proc = subprocess.Popen(['/bin/bash'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
@@ -331,17 +332,17 @@ def server_contextualize(parameters):
     config_file_path = find_config()
     if config_file_path is not None:
         public_url = parameters.get("public_url")
-	logger.info("writing public url '%s' in config file" % public_url)
+        logger.info("writing public url '%s' in config file" % public_url)
 
         config = ConfigParser.SafeConfigParser()
         config.read(config_file_path)
         config.add_section('server')
         config.set('server', 'public_url', "%s" % public_url)
 
-	for section in config.sections():
-	    logger.info(section)
-	    for name, value in config.items(section):
-	        logger.info('  %s = %r' % (name, value))
+        for section in config.sections():
+            logger.info(section)
+            for name, value in config.items(section):
+                logger.info('  %s = %r' % (name, value))
 
         with open(config_file_path, 'w') as configfile:
             logger.warning("Writing config file %s" % config_file_path)
@@ -418,8 +419,9 @@ def web_server_start():
         global STATUS_TARGET
         STATUS_TARGET = "ONLINE"
         threading.Thread(target=update_server_info_until_status_changed).start()
-        #update_server_info()
+        # update_server_info()
         return response
+
     result = server_start()
     return json.dumps({
         "action": "start",
@@ -434,8 +436,9 @@ def web_server_stop():
         global STATUS_TARGET
         STATUS_TARGET = "OFFLINE"
         threading.Thread(target=update_server_info_until_status_changed).start()
-        #update_server_info()
+        # update_server_info()
         return response
+
     result = server_stop()
     return json.dumps({
         "action": "stop",
@@ -450,8 +453,9 @@ def web_server_restart():
         global STATUS_TARGET
         STATUS_TARGET = "ONLINE"
         threading.Thread(target=update_server_info_until_status_changed).start()
-        #update_server_info()
+        # update_server_info()
         return response
+
     result = server_restart()
     return json.dumps({
         "action": "restart",
