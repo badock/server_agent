@@ -26,12 +26,15 @@ RUN ./csgoserver auto-install
 RUN /bin/echo -e "\n\nip=\"0.0.0.0\"" >> /home/csgoserver/lgsm/config-lgsm/csgoserver/csgoserver.cfg
 
 # Clone the server agent project
-RUN git clone https://github.com/badock/server_frontend.git
+RUN git clone https://github.com/badock/server_frontend.git -b master
+RUN ls -lha
+RUN ls -lha server_frontend
+RUN ls -lha server_frontend/conf
 # ADD server_frontend server_frontend
 RUN pip install -r server_frontend/requirements.txt
 
 # Configure supervisord
-ADD ../conf/supervisord.conf.example /etc/supervisord.conf
+ADD server_frontend/conf/supervisord.conf.example /etc/supervisord.conf
 COPY --chown=csgoserver server_frontend.conf /etc/server_frontend.conf
 RUN chmod 666 /etc/server_frontend.conf
 
