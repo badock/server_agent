@@ -22,20 +22,29 @@ RUN chmod +x linuxgsm.sh
 RUN bash linuxgsm.sh csgoserver
 RUN ./csgoserver auto-install
 
+RUN ls
+
 # Inject the public IP in the server's config
 RUN /bin/echo -e "\n\nip=\"0.0.0.0\"" >> /home/csgoserver/lgsm/config-lgsm/csgoserver/csgoserver.cfg
 
 # Clone the server agent project
-RUN git clone https://github.com/badock/server_frontend.git -b master
-RUN ls -lha
-RUN ls -lha server_frontend
-RUN ls -lha server_frontend/conf
+RUN git clone https://github.com/badock/server_frontend.git
+
 # ADD server_frontend server_frontend
 RUN pip install -r server_frontend/requirements.txt
 
 # Configure supervisord
-ADD server_frontend/conf/supervisord.conf.example /etc/supervisord.conf
-COPY --chown=csgoserver server_frontend.conf /etc/server_frontend.conf
+RUN ls server_frontend/conf/
+RUN ls server_frontend/conf/supervisord.conf.example
+
+USER root
+RUN cp server_frontend/conf/supervisord.conf.example /etc/supervisord.conf
+RUN chmod 666 /etc/supervisord.conf
+RUN cp server_frontend/conf/server_frontend.conf.example /etc/server_frontend.conf
 RUN chmod 666 /etc/server_frontend.conf
 
+# Inject the game name the server agent's config
+RUN /bin/sed -i "s/game.*=.*/game = csgo/g" /etc/server_frontend.conf
+
+USER csgoserver
 CMD supervisord -n
