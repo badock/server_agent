@@ -71,7 +71,7 @@ def get_server_console(server_url, num_page):
 def get_server_rcon_details(server_url):
     server_details = get_server_details(server_url)
 
-    server_url = server_details.get("server", {}).get("server_ip", "127.0.0.1")
+    server_url = server_details.get("server", {}).get("server_ip", "127.0.0.1:1234")
 
     ip, port_str = server_url.split(":")
 
@@ -103,7 +103,7 @@ def send_command(server_url, cmd):
     server_details = get_server_details(server_url)
     server_status = get_server_status(server_url).get("status")
 
-    server_url = server_details.get("server", {}).get("server_ip", "127.0.0.1")
+    server_url = server_details.get("server", {}).get("server_ip", "127.0.0.1:1234")
 
     ip, port_str = server_url.split(":")
 
