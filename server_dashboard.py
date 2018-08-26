@@ -2,6 +2,7 @@ import flask
 import flask_login
 from flask import Flask
 from flask import render_template
+from datetime import datetime
 
 login_manager = flask_login.LoginManager()
 # SERVER_AGENT_URL = "http://127.0.0.1:5000"
@@ -13,8 +14,6 @@ app.secret_key = "GamingFogKey1"
 login_manager.init_app(app)
 
 login_manager.login_view = "login"
-
-from datetime import datetime
 
 
 @app.template_filter()
