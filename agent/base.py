@@ -24,7 +24,7 @@ class Config(object):
     JOBS = [
         {
             'id': 'job1',
-            'func': 'server_agent:update_server_info',
+            'func': 'agent.base:update_server_info',
             'args': (),
             'trigger': 'interval',
             'seconds': 300
