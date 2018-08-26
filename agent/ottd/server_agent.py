@@ -29,7 +29,8 @@ class OttdAgentActions(AgentActions):
             "server": {
                 "server_name": "ottd",
                 "password": "unknown",
-                "rcon_password": "unknown"
+                "rcon_password": "unknown",
+                "status": "unknown"
             },
             "updated_server_status": "UKNOWN",
 
