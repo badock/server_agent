@@ -22,9 +22,6 @@ RUN chmod +x linuxgsm.sh
 RUN bash linuxgsm.sh csgoserver
 RUN ./csgoserver auto-install
 
-RUN ls -lh
-RUN echo "toto"
-
 # Inject the public IP in the server's config
 RUN /bin/echo -e "\n\nip=\"0.0.0.0\"" >> /home/csgoserver/lgsm/config-lgsm/csgoserver/csgoserver.cfg
 
@@ -35,9 +32,6 @@ RUN git clone https://github.com/badock/server_frontend.git
 RUN pip install -r server_frontend/requirements.txt
 
 # Configure supervisord
-RUN ls server_frontend/conf/
-RUN ls server_frontend/conf/supervisord.conf.example
-
 USER root
 RUN apt install -y nano
 RUN cp server_frontend/conf/supervisord.conf.example /etc/supervisord.conf
