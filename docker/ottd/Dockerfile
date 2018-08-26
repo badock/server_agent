@@ -38,6 +38,7 @@ RUN chmod 666 /etc/server_frontend.conf
 
 # Inject the game name the server agent's config
 RUN /bin/sed -i "s/game.*=.*/game = ottd/g" /etc/server_frontend.conf
+RUN /bin/sed -i "s/server_ip.*=.*/server_ip = 127.0.0.1:3979/g" /etc/server_frontend.conf
 
 USER csgoserver
 CMD supervisord -n
