@@ -22,7 +22,8 @@ RUN chmod +x linuxgsm.sh
 RUN bash linuxgsm.sh csgoserver
 RUN ./csgoserver auto-install
 
-RUN ls
+RUN ls -lh
+RUN echo "toto"
 
 # Inject the public IP in the server's config
 RUN /bin/echo -e "\n\nip=\"0.0.0.0\"" >> /home/csgoserver/lgsm/config-lgsm/csgoserver/csgoserver.cfg
@@ -38,6 +39,7 @@ RUN ls server_frontend/conf/
 RUN ls server_frontend/conf/supervisord.conf.example
 
 USER root
+RUN apt install -y nano
 RUN cp server_frontend/conf/supervisord.conf.example /etc/supervisord.conf
 RUN chmod 666 /etc/supervisord.conf
 RUN cp server_frontend/conf/server_frontend.conf.example /etc/server_frontend.conf

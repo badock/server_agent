@@ -21,7 +21,7 @@ class SteamAgentActions(AgentActions):
     def __init__(self):
         self.server_folder_path = "/home/csgoserver"
         self.server_cmd_path = "%s/csgoserver" % self.server_folder_path
-        self.task = []
+        self.tasks = {}
         self.server_info = None
 
     def fetch_server_info(self):
