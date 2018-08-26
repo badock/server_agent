@@ -24,15 +24,23 @@ class OttdAgentActions(AgentActions):
         self.tasks = {}
         self.server_info = None
 
+    def _server_is_running(self):
+        try:
+            ottd_pid = subprocess.check_output(["pidof", "openttd"])
+            return True
+        except subprocess.CalledProcessError as e:
+            pass
+        return False
+
     def fetch_server_info(self):
         return {
             "server": {
                 "server_name": "ottd",
                 "password": "unknown",
                 "rcon_password": "unknown",
-                "status": "unknown"
+                "status": "ONLINE" if self._server_is_running() else "OFFLINE"
             },
-            "updated_server_status": "UKNOWN",
+            "updated_server_status": "UNKNOWN",
 
         }
 
@@ -44,7 +52,7 @@ class OttdAgentActions(AgentActions):
     def get_console_log(self, num_page):
         console_log_path = "/tmp/ottd.log"
         logger.info("console_log_path: %s" % console_log_path)
-        cmd = """cat %s """ % (console_log_path)
+        cmd = """cat %s """ % console_log_path
 
         proc = subprocess.Popen(['/bin/bash'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
         stdout = proc.communicate(cmd)
@@ -97,7 +105,7 @@ class OttdAgentActions(AgentActions):
         task_uuid = str(uuid.uuid4())
         tmp_log_file = "/tmp/%s.log" % (task_uuid)
 
-        cmd = 'pkill -9 openttd > %s 2>&1' % (tmp_log_file)
+        cmd = 'pkill -9 openttd > %s 2>&1' % tmp_log_file
         proc = subprocess.Popen(['/bin/bash', '-c', cmd], stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
 
         self.tasks[task_uuid] = {
