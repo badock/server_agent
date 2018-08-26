@@ -36,4 +36,7 @@ def instantiate_agent_actions(game_name):
     if game_name == "csgo":
         from csgo.server_agent import CsgoAgentActions
         return CsgoAgentActions()
-    raise "Could not import the agent actions for game '%s'" % game_name
+    elif game_name == "ottd":
+        from ottd.server_agent import OttdAgentActions
+        return OttdAgentActions()
+    raise Exception("Could not import the agent actions for game '%s'" % game_name)
