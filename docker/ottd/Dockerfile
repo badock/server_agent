@@ -35,6 +35,7 @@ RUN cp server_frontend/conf/supervisord.conf.example /etc/supervisord.conf
 RUN chmod 666 /etc/supervisord.conf
 RUN cp server_frontend/conf/server_frontend.conf.example /etc/server_frontend.conf
 RUN chmod 666 /etc/server_frontend.conf
+RUN pip install -r /home/csgoserver/server_frontend/requirements.txt
 
 # Inject the game name the server agent's config
 RUN /bin/sed -i "s/game.*=.*/game = ottd/g" /etc/server_frontend.conf
