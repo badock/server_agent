@@ -8,7 +8,9 @@ validators
 itsdangerous
 celery
 transitions
-dates
+datesdef
 git+https://github.com/serverstf/python-valve.git
 requests
 flask_apscheduler
+git+https://github.com/badock/libopenttd.git
+git+https://github.com/ropenttd/libopenttd-python2.git
