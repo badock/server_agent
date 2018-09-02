@@ -1,6 +1,6 @@
 FROM ubuntu:16.04
 
-EXPOSE 3979 5000 5001 9001
+EXPOSE 3979 5000 5001 9001 3977
 
 # Install dependencies
 RUN dpkg --add-architecture i386

@@ -164,3 +164,15 @@ def web_server_update():
 def web_server_tasks():
     result = server_actions.server_tasks()
     return json.dumps(result)
+
+
+@app.route("/server/players")
+def web_server_players():
+    result = server_actions.players()
+    return json.dumps(result)
+
+
+@app.route("/server/kick/<player_id>")
+def web_kick_player(player_id):
+    result = server_actions.kick_player(player_id)
+    return json.dumps(result)

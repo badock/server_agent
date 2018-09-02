@@ -31,6 +31,12 @@ class AgentActions(object):
     def server_tasks(self):
         raise NotImplemented()
 
+    def players(self):
+        raise NotImplemented()
+
+    def kick_player(self, player_id):
+        raise NotImplemented()
+
 
 def instantiate_agent_actions(game_name):
     if game_name == "csgo":

@@ -282,3 +282,9 @@ class SteamAgentActions(AgentActions):
                 "created_at": task.get("created_at")
             }
         return result
+
+    def players(self):
+        raise NotImplemented()
+
+    def kick_player(self, player_id):
+        raise NotImplemented()

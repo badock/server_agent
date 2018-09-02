@@ -4,8 +4,8 @@ import socket
 from libottdadmin2.client import AdminClient, AdminRcon, ServerRcon, ServerRconEnd
 
 SERVER_IP = "192.168.0.21"
-GAME_PORT = 4979
-ADMIN_PORT = 4977
+GAME_PORT = 3979
+ADMIN_PORT = 3977
 RCON_PASSWORD = "badock"
 
 
@@ -67,7 +67,7 @@ def rcon(command):
 
     result = []
     if failed:
-        print("Unable to connect to %(host)s:%(port)s" % {'host': options.host, 'port': options.port})
+        pass
     else:
         connection.send_packet(AdminRcon, command=command)
 
@@ -75,15 +75,12 @@ def rcon(command):
         while cont:
             packets = connection.poll()
             if packets is None or packets is False:
-                print("Connection lost!")
                 break
             cont = len(packets) > 0
             for packet, data in packets:
                 if packet == ServerRcon:
-                    print(">>> %s" % data['result'])
-                    result += data['result']
+                    result += [data['result']]
                 elif packet == ServerRconEnd:
-                    print("<<< END OF COMMAND >>>")
                     cont = False
                     break
                 else:

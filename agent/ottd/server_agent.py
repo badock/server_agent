@@ -168,3 +168,31 @@ class OttdAgentActions(AgentActions):
                 "created_at": task.get("created_at")
             }
         return result
+
+    def players(self):
+        from core.ottd.misc import rcon
+        import re
+        clients_str = rcon("clients")
+        result = []
+
+        for client_str in clients_str:
+            client_id, client_name, client_company, client_ip = re.match("Client #(\w*)  name: '(\w*)'  company: (\w*)  IP: (\w*)", client_str).groups()
+            result += [{
+                "client_id": client_id,
+                "client_name": client_name
+            }]
+            print(client_str)
+
+        return result
+
+    def kick_player(self, player_id):
+        from core.ottd.misc import rcon
+        result = rcon("kick %s" % player_id)
+
+        return True
+
+
+if __name__ == "__main__":
+    actions = OttdAgentActions()
+    players = actions.players()
+    print(players)
