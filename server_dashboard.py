@@ -165,9 +165,8 @@ def actions(action=None, cmd_result=None):
             update_server(SERVER_AGENT_URL)
         return flask.redirect(flask.url_for("actions"))
 
-    from core.rcon.rcon_api import get_server_details, get_server_rcon_details, get_server_tasks
+    from core.rcon.rcon_api import get_server_details, get_server_tasks
     server_details = get_server_details(SERVER_AGENT_URL)
-    server_rcon_details = get_server_rcon_details(SERVER_AGENT_URL)
     server_tasks = get_server_tasks(SERVER_AGENT_URL)
 
     for server_task_id, server_task in server_tasks.iteritems():
@@ -176,7 +175,6 @@ def actions(action=None, cmd_result=None):
     return render_template("actions.html",
                            # server=server,
                            server_details=server_details,
-                           server_rcon_details=server_rcon_details,
                            server_tasks=server_tasks,
                            cmd_result=cmd_result)
 

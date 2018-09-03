@@ -83,8 +83,8 @@ class OttdAgentActions(AgentActions):
         task_uuid = str(uuid.uuid4())
         tmp_log_file = "/tmp/%s.log" % (task_uuid)
 
-        cmd = '/usr/games/openttd -f -D -d > /tmp/ottd.log 2>&1; echo "dedicated server started" > %s ' % tmp_log_file
-        proc = subprocess.Popen(['/bin/bash', '-c', cmd], stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
+        cmd = '/usr/games/openttd -D -d' % tmp_log_file
+        proc = subprocess.Popen([cmd])
 
         self.tasks[task_uuid] = {
             "pid": proc.pid,
