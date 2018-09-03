@@ -3,6 +3,7 @@ import flask_login
 from flask import Flask
 from flask import render_template
 from datetime import datetime
+import requests
 
 login_manager = flask_login.LoginManager()
 # SERVER_AGENT_URL = "http://127.0.0.1:5000"
@@ -197,14 +198,11 @@ def task_logs(task_id):
 @app.route("/players")
 def players():
     from core.data.server_agent import SERVER_AGENT_URL
-    from core.rcon.rcon_api import get_server_details, get_server_rcon_details
-    server_details = get_server_details(SERVER_AGENT_URL)
-    server_rcon_details = get_server_rcon_details(SERVER_AGENT_URL)
+
+    players = requests.get("%s/server/players" % SERVER_AGENT_URL).json()
 
     return render_template("players.html",
-                           # server=server,
-                           server_details=server_details,
-                           server_rcon_details=server_rcon_details)
+                           players=players)
 
 
 @app.route("/logs/num_page=<int:num_page>")
@@ -252,8 +250,8 @@ def send_command():
 @app.route("/kick/<player>")
 def kick_player(player):
     from core.data.server_agent import SERVER_AGENT_URL
-    from core.rcon.rcon_api import server_kick_player
-    server_kick_player(SERVER_AGENT_URL, player)
+
+    players = requests.get("%s/server/kick/%s" % (SERVER_AGENT_URL, player)).json()
 
     return flask.redirect(flask.url_for("players"))
 
@@ -261,8 +259,8 @@ def kick_player(player):
 @app.route("/ban/<player>")
 def ban_player(player):
     from core.data.server_agent import SERVER_AGENT_URL
-    from core.rcon.rcon_api import server_ban_player
-    server_ban_player(SERVER_AGENT_URL, player)
+
+    players = requests.get("%s/server/kick/%s" % (SERVER_AGENT_URL, player)).json()
 
     return flask.redirect(flask.url_for("players"))
 
@@ -271,4 +269,4 @@ if __name__ == '__main__':
     # Run web application
     print("Creating web app")
     app.jinja_env.auto_reload = DEBUG
-    app.run(host="0.0.0.0", port=5001, debug=DEBUG, threaded=True)
+    app.run(host="0.0.0.0", port=5010, debug=DEBUG, threaded=True)

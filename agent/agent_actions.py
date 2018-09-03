@@ -37,6 +37,15 @@ class AgentActions(object):
     def kick_player(self, player_id):
         raise NotImplemented()
 
+    def ban_player(self, player_id):
+        raise NotImplemented()
+
+    def say(self, msg):
+        raise NotImplemented()
+
+    def cmd(self, cmd):
+        raise NotImplemented()
+
 
 def instantiate_agent_actions(game_name):
     if game_name == "csgo":

@@ -24,7 +24,7 @@
             <div class="row">
                 <h1>Players</h1>
 
-                {% if server_rcon_details.players.values.players|length == 0 %}
+                {% if players|length == 0 %}
 
                 <table class="table">
                     <tr>
@@ -36,21 +36,19 @@
                 <table class="table">
                     <thead>
                         <tr>
+                            <th>Id</th>
                             <th>Name</th>
-                            <th>Connected since</th>
-                            <th>Score</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                    {% for player in server_rcon_details.players.values.players | sort(attribute='score', reverse=True) %}
+                    {% for player in players | sort(attribute='client_name', reverse=True) %}
                         <tr>
-                            <td>{{ player.values.name }}</td>
-                            <td>{{ player.values.duration | prettify_duration }}</td>
-                            <td>{{ player.values.score }}</td>
+                            <td>{{ player.client_id }}</td>
+                            <td>{{ player.client_name }}</td>
                             <td>
-                                <a href="{{ url_for("kick_player", player=player.name) }}"><span class="badge badge-warning">Kick</span></a>
-                                <a href="{{ url_for("ban_player", player=player.name) }}"><span class="badge badge-danger">Ban</span></a>
+                                <a href="{{ url_for("kick_player", player=player.client_id) }}"><span class="badge badge-warning">Kick</span></a>
+                                <a href="{{ url_for("ban_player", player=player.client_id) }}"><span class="badge badge-danger">Ban</span></a>
                             </td>
                         </tr>
                     {% endfor %}

@@ -83,7 +83,7 @@ class OttdAgentActions(AgentActions):
         task_uuid = str(uuid.uuid4())
         tmp_log_file = "/tmp/%s.log" % (task_uuid)
 
-        cmd = '/usr/games/openttd -f -D > /tmp/ottd.log 2>&1; echo "dedicated server started" > %s ' % tmp_log_file
+        cmd = '/usr/games/openttd -f -D -d > /tmp/ottd.log 2>&1; echo "dedicated server started" > %s ' % tmp_log_file
         proc = subprocess.Popen(['/bin/bash', '-c', cmd], stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
 
         self.tasks[task_uuid] = {
@@ -190,6 +190,24 @@ class OttdAgentActions(AgentActions):
         result = rcon("kick %s" % player_id)
 
         return True
+
+    def kick_player(self, player_id):
+        from core.ottd.misc import rcon
+        result = rcon("ban %s" % player_id)
+
+        return True
+
+    def say(self, msg):
+        from core.ottd.misc import rcon
+        result = rcon("say \"%s\"" % msg)
+
+        return True
+
+    def cmd(self, cmd):
+        from core.ottd.misc import rcon
+        result = rcon("%s" % cmd)
+
+        return result
 
 
 if __name__ == "__main__":

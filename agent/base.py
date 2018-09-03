@@ -176,3 +176,21 @@ def web_server_players():
 def web_kick_player(player_id):
     result = server_actions.kick_player(player_id)
     return json.dumps(result)
+
+
+@app.route("/server/ban/<player_id>")
+def web_ban_player(player_id):
+    result = server_actions.ban_player(player_id)
+    return json.dumps(result)
+
+
+@app.route("/server/say", methods=["POST"])
+def web_kick_player(player_id):
+    result = server_actions.kick_player(player_id)
+    return json.dumps(result)
+
+
+@app.route("/server/cmd", methods=["POST"])
+def web_ban_player(player_id):
+    result = server_actions.ban_player(player_id)
+    return json.dumps(result)

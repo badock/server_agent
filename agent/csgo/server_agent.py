@@ -22,6 +22,26 @@ class CsgoAgentActions(SteamAgentActions):
         result = server_kick_player(SERVER_AGENT_URL, player_id)
         return result
 
+    def ban_player(self, player_id):
+        from core.data.server_agent import SERVER_AGENT_URL
+        from core.rcon.rcon_api import server_ban_player
+        result = server_ban_player(SERVER_AGENT_URL, player_id)
+        return result
+
+    def say(self, msg):
+        from core.data.server_agent import SERVER_AGENT_URL
+        from core.rcon.rcon_api import send_public_message
+
+        send_public_message(SERVER_AGENT_URL, msg)
+        return True
+
+    def cmd(self, cmd):
+        from core.data.server_agent import SERVER_AGENT_URL
+        from core.rcon.rcon_api import send_command
+        cmd_result_str = send_command(SERVER_AGENT_URL, cmd)["text"]
+        cmd_result = cmd_result_str.split("\n")
+        return cmd_result
+
 
 if __name__ == "__main__":
     actions = CsgoAgentActions()
