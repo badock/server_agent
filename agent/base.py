@@ -1,4 +1,5 @@
 from flask import Flask
+from flask import request
 from flask_apscheduler import APScheduler
 import logging
 import flask
@@ -185,12 +186,14 @@ def web_ban_player(player_id):
 
 
 @app.route("/server/say", methods=["POST"])
-def web_say(player_id):
-    result = server_actions.kick_player(player_id)
+def web_say():
+    msg = request.form['msg']
+    result = server_actions.say(msg)
     return json.dumps(result)
 
 
 @app.route("/server/cmd", methods=["POST"])
-def web_cmd(player_id):
-    result = server_actions.ban_player(player_id)
+def web_cmd():
+    cmd = request.form['cmd']
+    result = server_actions.cmd(cmd)
     return json.dumps(result)
