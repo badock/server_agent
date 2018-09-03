@@ -224,11 +224,14 @@ def logs(num_page=1):
 @app.route("/msg", methods=["POST"])
 def send_message():
     from core.data.server_agent import SERVER_AGENT_URL
-    from core.rcon.rcon_api import send_public_message
 
     if "msg" in flask.request.form:
         msg = flask.request.form.get("msg")
-        send_public_message(SERVER_AGENT_URL, msg)
+
+        post_data = {
+            "msg": msg
+        }
+        requests.post("%s/server/say" % SERVER_AGENT_URL, post_data)
 
     return flask.redirect(flask.url_for("actions"))
 
@@ -236,13 +239,15 @@ def send_message():
 @app.route("/cmd", methods=["POST"])
 def send_command():
     from core.data.server_agent import SERVER_AGENT_URL
-    from core.rcon.rcon_api import send_command
 
     cmd_result = []
     if "cmd" in flask.request.form:
-        msg = flask.request.form.get("cmd")
-        cmd_result_str = send_command(SERVER_AGENT_URL, msg)["text"]
-        cmd_result = cmd_result_str.split("\n")
+        cmd = flask.request.form.get("cmd")
+
+        post_data = {
+            "cmd": cmd
+        }
+        cmd_result = requests.post("%s/server/cmd" % SERVER_AGENT_URL, post_data)
 
     return actions(cmd_result=cmd_result)
 

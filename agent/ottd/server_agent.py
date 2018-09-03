@@ -177,11 +177,12 @@ class OttdAgentActions(AgentActions):
 
         for client_str in clients_str:
             client_id, client_name, client_company, client_ip = re.match("Client #(\w*)  name: '(\w*)'  company: (\w*)  IP: (\w*)", client_str).groups()
-            result += [{
-                "client_id": client_id,
-                "client_name": client_name
-            }]
-            print(client_str)
+            if client_id != "1":
+                result += [{
+                    "client_id": client_id,
+                    "client_name": client_name
+                }]
+                print(client_str)
 
         return result
 
