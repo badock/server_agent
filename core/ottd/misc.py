@@ -3,7 +3,7 @@ from libopenttd.query.server import send as s_send
 import socket
 from libottdadmin2.client import AdminClient, AdminRcon, ServerRcon, ServerRconEnd
 
-SERVER_IP = "192.168.0.21"
+SERVER_IP = "127.0.0.1"
 GAME_PORT = 3979
 ADMIN_PORT = 3977
 RCON_PASSWORD = "badock"
