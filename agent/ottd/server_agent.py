@@ -84,7 +84,7 @@ class OttdAgentActions(AgentActions):
         tmp_log_file = "/tmp/%s.log" % (task_uuid)
 
         cmd = '/usr/games/openttd -D -d > %s 2>&1' % tmp_log_file
-        proc = subprocess.Popen([cmd])
+        proc = subprocess.Popen(['/bin/bash', '-c', cmd])
 
         self.tasks[task_uuid] = {
             "pid": proc.pid,
