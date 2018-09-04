@@ -50,7 +50,7 @@ class OttdAgentActions(AgentActions):
         return self.server_info
 
     def get_console_log(self, num_page):
-        console_log_path = "/tmp/ottd.log"
+        console_log_path = "%s/.openttd/openttd.log" % self.server_folder_path
         logger.info("console_log_path: %s" % console_log_path)
         cmd = """cat %s """ % console_log_path
 
