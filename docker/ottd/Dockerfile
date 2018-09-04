@@ -14,6 +14,18 @@ RUN wget http://security.ubuntu.com/ubuntu/pool/main/i/icu/libicu52_52.1-3ubuntu
 RUN apt install -y ./libicu52_52.1-3ubuntu0.8_amd64.deb
 RUN wget https://binaries.openttd.org/releases/1.8.0/openttd-1.8.0-linux-ubuntu-trusty-amd64.deb
 RUN apt install -y ./openttd-1.8.0-linux-ubuntu-trusty-amd64.deb
+RUN apt install -y screen
+
+# Creating a systemD service for ottd
+WORKDIR /root
+RUN wget https://bitbucket.org/frodus/openttd-init/downloads/openttd-init-1.2.1.zip
+RUN unzip openttd-init-1.2.1.zip
+RUN ln -s ~/openttd-init/openttd /etc/init.d/openttd
+RUN mv openttd-init/config.example openttd-init/config
+RUN /bin/sed -i "s/USERNAME.*=.*/USERNAME=\"csgoserver\"/g" openttd-init/config
+
+RUN chmod 755  ~/openttd-init/openttd
+RUN sudo update-rc.d openttd defaults
 
 # Create a csgoserver
 RUN useradd -ms /bin/bash csgoserver
@@ -40,6 +52,11 @@ RUN pip install -r /home/csgoserver/server_frontend/requirements.txt
 # Inject the game name the server agent's config
 RUN /bin/sed -i "s/game.*=.*/game = ottd/g" /etc/server_frontend.conf
 RUN /bin/sed -i "s/server_ip.*=.*/server_ip = 127.0.0.1:3979/g" /etc/server_frontend.conf
+
+# Initialize configuration files with default values
+RUN bash -c "service openttd start; service openttd stop;"
+RUN /bin/sed -i "s/rcon_password.*=.*/rcon_password = password/g" /home/csgoserver/.openttd/openttd.cfg
+RUN /bin/sed -i "s/admin_password.*=.*/admin_password = password/g" /home/csgoserver/.openttd/openttd.cfg
 
 USER csgoserver
 CMD supervisord -n
