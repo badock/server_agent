@@ -6,7 +6,7 @@ from libottdadmin2.client import AdminClient, AdminRcon, ServerRcon, ServerRconE
 SERVER_IP = "127.0.0.1"
 GAME_PORT = 3979
 ADMIN_PORT = 3977
-RCON_PASSWORD = "badock"
+RCON_PASSWORD = "password"
 
 
 def get_server_info():
