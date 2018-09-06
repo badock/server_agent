@@ -4,6 +4,7 @@ import valve.source.a2s
 import valve.source.master_server
 import valve.rcon
 import requests
+import logging
 
 
 def dispatch_action_server(server_url, action):
@@ -68,11 +69,9 @@ def get_server_console(server_url, num_page):
     return result
 
 
-def get_server_rcon_details(server_url):
-    server_details = get_server_details(server_url)
-
+def get_server_rcon_details(server_details):
+    logging.info(server_details)
     server_url = server_details.get("server", {}).get("server_ip", "127.0.0.1:1234")
-
     ip, port_str = server_url.split(":")
 
     ip = "csgo.jonathanpastor.fr"
@@ -99,9 +98,10 @@ def get_server_rcon_details(server_url):
     return result
 
 
-def send_command(server_url, cmd):
-    server_details = get_server_details(server_url)
-    server_status = get_server_status(server_url).get("status")
+def send_command(cmd, server_details):
+    logging.info(server_details)
+    server_status = server_details.get("network", {}).get("status", "OFFLINE")
+
 
     server_url = server_details.get("server", {}).get("server_ip", "127.0.0.1:1234")
 
@@ -131,13 +131,13 @@ def send_command(server_url, cmd):
     return result
 
 
-def send_public_message(server_url, msg):
-    return send_command(server_url, "say %s" % msg)
+def send_public_message(msg, server_details):
+    return send_command("say %s" % msg, server_details)
 
 
-def server_kick_player(server_url, player):
-    return send_command(server_url, "kick %s" % player)
+def server_kick_player(player, server_details):
+    return send_command("kick %s" % player, server_details)
 
 
-def server_ban_player(server_url, player):
-    return send_command(server_url, "ban %s" % player)
+def server_ban_player(player, server_details):
+    return send_command("ban %s" % player, server_details)

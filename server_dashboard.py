@@ -209,13 +209,13 @@ def logs(num_page=1):
     from core.data.server_agent import SERVER_AGENT_URL
     from core.rcon.rcon_api import get_server_details, get_server_rcon_details, get_server_console
     server_details = get_server_details(SERVER_AGENT_URL)
-    server_rcon_details = get_server_rcon_details(SERVER_AGENT_URL)
+    #server_rcon_details = get_server_rcon_details(SERVER_AGENT_URL)
     server_console = get_server_console(SERVER_AGENT_URL, num_page)
 
     return render_template("logs.html",
                            # server=server,
                            server_details=server_details,
-                           server_rcon_details=server_rcon_details,
+                           #server_rcon_details=server_rcon_details,
                            server_console=server_console)
 
 
