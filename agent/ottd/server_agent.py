@@ -144,7 +144,28 @@ class OttdAgentActions(AgentActions):
         }
 
     def server_contextualize(self, parameters):
-        logger.warn("WARNING: Contextualization is not yet supported by ottd :-(")
+        # Contextualize config file with public address
+        config_file_path = find_config()
+        if config_file_path is not None:
+            public_url = parameters.get("public_url")
+            logger.info("writing public url '%s' in config file" % public_url)
+
+            config = ConfigParser.SafeConfigParser()
+            config.read(config_file_path)
+            if "server" not in config.sections():
+                config.add_section('server')
+            config.set('server', 'public_url', "%s" % public_url)
+
+            for section in config.sections():
+                logger.info(section)
+                for name, value in config.items(section):
+                    logger.info('  %s = %r' % (name, value))
+
+            with open(config_file_path, 'w') as configfile:
+                logger.warning("Writing config file %s" % config_file_path)
+                config.write(configfile)
+        else:
+            logger.warn("WARNING: I could not find any config file during contextualization")
 
         return {
             "msg": "OK"
@@ -192,7 +213,7 @@ class OttdAgentActions(AgentActions):
 
         return True
 
-    def kick_player(self, player_id):
+    def ban_player(self, player_id):
         from core.ottd.misc import rcon
         result = rcon("ban %s" % player_id)
 
