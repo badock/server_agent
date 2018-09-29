@@ -18,7 +18,7 @@ class MinecraftAgentActions(LinuxGSMAgentActions):
     def players(self):
         logger.info("players")
         from core.minecraft.misc import rcon
-        prefix, players_str = rcon("list").split(" players online: ")
+        prefix, players_str = rcon("list", server_details=self.get_server_info()).split(" players online: ")
         if players_str == "":
             return []
         players = players_str.split(", ")
@@ -27,26 +27,27 @@ class MinecraftAgentActions(LinuxGSMAgentActions):
 
     def kick_player(self, player_id):
         from core.minecraft.misc import rcon
-        result = rcon("kick %s" % player_id)
+        result = rcon("kick %s" % player_id, server_details=self.get_server_info())
         return result
 
     def ban_player(self, player_id):
         from core.minecraft.misc import rcon
-        result = rcon("ban %s" % player_id)
+        result = rcon("ban %s" % player_id, server_details=self.get_server_info())
         return result
 
     def say(self, msg):
         from core.minecraft.misc import rcon
-        rcon("say %s" % msg)
+        rcon("say %s" % msg, server_details=self.get_server_info())
         return True
 
     def cmd(self, cmd):
         from core.minecraft.misc import rcon
-        cmd_result = rcon(cmd).split("\n")
+        cmd_result = rcon(cmd, server_details=self.get_server_info()).split("\n")
         return cmd_result
 
     def server_contextualize(self, parameters):
-        server_config_location = "/home/csgoserver/serverfiles/server.properties"
+        from core.minecraft.misc import MINECRAFT_CONFIG_LOCATION
+        server_config_location = MINECRAFT_CONFIG_LOCATION
         cmd = ""
         # Fix for server IP
         docker_local_ip = socket.gethostbyname(socket.gethostname())

@@ -267,4 +267,4 @@ if __name__ == '__main__':
     # Run web application
     print("Creating web app")
     app.jinja_env.auto_reload = DEBUG
-    app.run(host="0.0.0.0", port=5010, debug=DEBUG, threaded=True)
+    app.run(host="0.0.0.0", port=5011, debug=DEBUG, threaded=True)
