@@ -74,7 +74,6 @@ def get_server_rcon_details(server_details):
     server_url = server_details.get("server", {}).get("server_ip", "127.0.0.1:1234")
     ip, port_str = server_url.split(":")
 
-    ip = "csgo.jonathanpastor.fr"
     address = (ip, int(port_str))
 
     offline_value = "OFFLINE"
@@ -102,12 +101,10 @@ def send_command(cmd, server_details):
     logging.info(server_details)
     server_status = server_details.get("network", {}).get("status", "OFFLINE")
 
-
     server_url = server_details.get("server", {}).get("server_ip", "127.0.0.1:1234")
 
     ip, port_str = server_url.split(":")
 
-    ip = "csgo.jonathanpastor.fr"
     address = (ip, int(port_str))
 
     offline_value = "OFFLINE"
