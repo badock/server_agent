@@ -52,7 +52,7 @@ class MinecraftAgentActions(LinuxGSMAgentActions):
         docker_local_ip = socket.gethostbyname(socket.gethostname())
         parameters["server-ip"] = docker_local_ip
         for (k, v) in parameters.iteritems():
-            cmd += 'sed -i "s/%s=.*//g" %s;' % (k, server_config_location)
+            cmd += 'sed -i "s/^%s=.*//g" %s;' % (k, server_config_location)
             cmd += 'echo -e "\n%s=%s" >> %s;' % (k, v, server_config_location)
             cmd += "grep -v '^ *$' %s > tmp && mv tmp %s;" % (server_config_location, server_config_location)
         proc = subprocess.Popen(['/bin/bash', '-c', cmd], stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
