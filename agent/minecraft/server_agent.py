@@ -3,6 +3,7 @@ import subprocess
 from agent.linuxgsm.server_agent import LinuxGSMAgentActions
 from core.config.config_loader import find_config
 import ConfigParser
+import socket
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
 logger = logging.getLogger(__name__)
@@ -47,6 +48,9 @@ class MinecraftAgentActions(LinuxGSMAgentActions):
     def server_contextualize(self, parameters):
         server_config_location = "/home/csgoserver/serverfiles/server.properties"
         cmd = ""
+        # Fix for server IP
+        docker_local_ip = socket.gethostbyname(socket.gethostname())
+        parameters["server-ip"] = docker_local_ip
         for (k, v) in parameters.iteritems():
             cmd += 'sed -i "s/%s=.*//g" %s;' % (k, server_config_location)
             cmd += 'echo -e "\n%s=%s" >> %s;' % (k, v, server_config_location)
