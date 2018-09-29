@@ -54,4 +54,7 @@ def instantiate_agent_actions(game_name):
     elif game_name == "ottd":
         from ottd.server_agent import OttdAgentActions
         return OttdAgentActions()
+    elif game_name == "minecraft":
+        from minecraft.server_agent import MinecraftAgentActions
+        return MinecraftAgentActions()
     raise Exception("Could not import the agent actions for game '%s'" % game_name)

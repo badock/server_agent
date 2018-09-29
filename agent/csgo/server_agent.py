@@ -1,11 +1,11 @@
 import logging
-from agent.linuxgsm.server_agent import SteamAgentActions
+from agent.linuxgsm.server_agent import LinuxGSMAgentActions
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
 logger = logging.getLogger(__name__)
 
 
-class CsgoAgentActions(SteamAgentActions):
+class CsgoAgentActions(LinuxGSMAgentActions):
 
     def __init__(self):
         super(CsgoAgentActions, self).__init__()

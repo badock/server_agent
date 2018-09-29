@@ -16,7 +16,7 @@ def remove_ansi_char(text):
     return ansi_escape.sub('', text)
 
 
-class SteamAgentActions(AgentActions):
+class LinuxGSMAgentActions(AgentActions):
 
     def __init__(self):
         self.server_folder_path = "/home/csgoserver"
